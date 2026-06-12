@@ -77,7 +77,7 @@ async def clone_session(session_id: str):
     if not s:
         raise HTTPException(404, "Session not found")
     new_id = str(uuid.uuid4())
-    cloned_s = db_service.create_session(new_id, title=f"{s['title']} (Copy)", model=s["model"])
+    db_service.create_session(new_id, title=f"{s['title']} (Copy)", model=s["model"])
     messages = db_service.get_messages_full(session_id)
     for msg in messages:
         db_service.save_message(
@@ -86,7 +86,7 @@ async def clone_session(session_id: str):
             msg["content"],
             msg["sources"]
         )
-    return cloned_s
+    return db_service.get_session(new_id)
 
 @router.patch("/{session_id}")
 async def update_session(session_id: str, body: SessionUpdate):
